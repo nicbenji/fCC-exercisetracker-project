@@ -24,7 +24,10 @@ const createUser = async (username) => {
   }
 }
 
-
+const getUsers = async () => {
+  return await User.find({}).select({ __v: 0 });
+}
 
 exports.createUser = createUser;
+exports.getUsers = getUsers;
 
