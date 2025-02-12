@@ -28,9 +28,6 @@ const getUsers = async () => {
   return await User.find({}).select({ __v: 0 });
 }
 
-const getUserById = async (userId) => {
-  return await User.findById(userId).select({ username: 1, _id: 0 });
-}
 
 exports.createUser = createUser;
 exports.getUsers = getUsers;
@@ -57,7 +54,10 @@ const exerciseSchema = new mongoose.Schema({
 
 const Exercise = new mongoose.model('Exercise', exerciseSchema);
 
-const createExercise = async (userId, description, duration, date = new Date()) => {
+const createExercise = async (userId, description, duration, date) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error('Invalid ObjectId');
+  }
   const exercise = new Exercise({
     user: userId,
     description,
@@ -65,12 +65,15 @@ const createExercise = async (userId, description, duration, date = new Date()) 
     date
   });
   await exercise.save();
+  const populatedExercise = await exercise.populate('user');
   return {
-    username: getUserById(userId),
+    username: populatedExercise.user.username,
     description,
     duration,
     date: date.toDateString(),
-    _id: userId
+    _id: populatedExercise.user._id
   }
 }
+
+exports.createExercise = createExercise;
 

@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { createUser, getUsers } = require('./schemas')
+const { createUser, getUsers, createExercise } = require('./schemas')
 require('dotenv').config()
 
 app.use(cors())
@@ -32,8 +32,14 @@ app.route('/api/users')
     }
   });
 
-app.post('/api/users/:_id/exercises', async (res, req) => {
-
+app.post('/api/users/:_id/exercises', async (req, res) => {
+  const date = new Date(req.body.date) || new Date();
+  try {
+    const exercise = await createExercise(req.params._id, req.body.description, req.body.duration, date);
+    res.json(exercise);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
