@@ -17,8 +17,14 @@ const createUser = async (username) => {
   const user = new User({
     username: username
   });
-  return await user.save();
+  await user.save();
+  return {
+    username: user.username,
+    _id: user._id
+  }
 }
+
+
 
 exports.createUser = createUser;
 

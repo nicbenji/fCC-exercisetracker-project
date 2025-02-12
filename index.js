@@ -18,7 +18,9 @@ app.route('/api/users')
       res.json(user);
     } catch (err) {
       console.error(err);
-      res.json({ error: 'Username already taken' });
+      if (err.errorResponse.code === 11000) {
+        res.json({ error: 'Username already taken' });
+      }
     }
   })
   .get(async (req, res) => {
