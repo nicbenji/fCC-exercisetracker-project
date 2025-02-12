@@ -58,6 +58,9 @@ const createExercise = async (userId, description, duration, date) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid ObjectId');
   }
+  if (isNaN(duration)) {
+    throw new Error('Please enter a number for the duration')
+  }
   const exercise = new Exercise({
     user: userId,
     description,
