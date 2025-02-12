@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const { createUser } = require('./schemas')
 require('dotenv').config()
 
 app.use(cors())
@@ -11,7 +12,16 @@ app.get('/', (_req, res) => {
 });
 
 app.route('/api/users')
-  .post((req, res) => {
+  .post(async (req, res) => {
+    try {
+      const user = await createUser(req.body.username);
+      res.json(user);
+    } catch (err) {
+      console.error(err);
+      res.json({ error: 'Username already taken' });
+    }
+  })
+  .get(async (req, res) => {
 
   });
 
