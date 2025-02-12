@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { createUser } = require('./schemas')
+const { createUser, getUsers } = require('./schemas')
 require('dotenv').config()
 
 app.use(cors())
@@ -23,8 +23,13 @@ app.route('/api/users')
       }
     }
   })
-  .get(async (req, res) => {
-
+  .get(async (_req, res) => {
+    try {
+      const users = await getUsers();
+      res.json(users);
+    } catch (err) {
+      console.error(err);
+    }
   });
 
 
