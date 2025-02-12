@@ -28,6 +28,49 @@ const getUsers = async () => {
   return await User.find({}).select({ __v: 0 });
 }
 
+const getUserById = async (userId) => {
+  return await User.findById(userId).select({ username: 1, _id: 0 });
+}
+
 exports.createUser = createUser;
 exports.getUsers = getUsers;
+
+const exerciseSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  duration: {
+    type: Number,
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  }
+});
+
+const Exercise = new mongoose.model('Exercise', exerciseSchema);
+
+const createExercise = async (userId, description, duration, date = new Date()) => {
+  const exercise = new Exercise({
+    user: userId,
+    description,
+    duration,
+    date
+  });
+  await exercise.save();
+  return {
+    username: getUserById(userId),
+    description,
+    duration,
+    date: date.toDateString(),
+    _id: userId
+  }
+}
 
