@@ -61,6 +61,7 @@ const createExercise = async (userId, description, duration, date) => {
   if (isNaN(duration)) {
     throw new Error('Please enter a number for the duration')
   }
+  console.log(date)
   const exercise = new Exercise({
     user: userId,
     description,
@@ -80,7 +81,42 @@ const createExercise = async (userId, description, duration, date) => {
 
 exports.createExercise = createExercise;
 
+userSchema.virtual('log', {
+  ref: 'Exercise',
+  localField: '_id',
+  foreignField: 'user',
+});
+
+userSchema.set('toJSON', { virtuals: true });
+
 const getUserLogs = async (userId) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error('Invalid ObjectId');
+  }
+
+  const user = await User.findById(userId).populate({
+    path: 'log',
+    options: {
+      select: 'description duration date _id',
+      sort: { date: -1 }
+    }
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+  console.log(user.log)
+
+  return {
+    username: user.username,
+    count: user.log.length,
+    _id: user._id,
+    log: user.log.map((exercise) => ({
+      description: exercise.description,
+      duration: exercise.duration,
+      date: exercise.date.toDateString()
+    }))
+  }
 
 }
 

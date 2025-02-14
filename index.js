@@ -33,7 +33,7 @@ app.route('/api/users')
   });
 
 app.post('/api/users/:_id/exercises', async (req, res) => {
-  const date = new Date(req.body.date) || new Date();
+  const date = req.body.date ? new Date(req.body.date) : new Date();
   try {
     const exercise = await createExercise(req.params._id, req.body.description, req.body.duration, date);
     res.json(exercise);
