@@ -80,3 +80,8 @@ const createExercise = async (userId, description, duration, date) => {
 
 exports.createExercise = createExercise;
 
+const getUserLogs = async (userId) => {
+
+}
+
+exports.getUserLogs = getUserLogs;

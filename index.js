@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { createUser, getUsers, createExercise } = require('./schemas')
+const { createUser, getUsers, createExercise, getUserLogs } = require('./schemas')
 require('dotenv').config()
 
 app.use(cors())
@@ -37,6 +37,15 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
   try {
     const exercise = await createExercise(req.params._id, req.body.description, req.body.duration, date);
     res.json(exercise);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {
+    const userWithLogs = await getUserLogs(req.params._id);
+    res.json(userWithLogs);
   } catch (err) {
     console.error(err);
   }
