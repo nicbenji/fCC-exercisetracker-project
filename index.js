@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { createUser, getUsers, createExercise, getUserLogs } = require('./schemas')
+const { createUser, getUsers, createExercise, getUserLogs, findUserByName } = require('./schemas')
 require('dotenv').config()
 
 app.use(cors())
@@ -11,17 +11,24 @@ app.get('/', (_req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+const postUser = async (username) => {
+  try {
+    return await createUser(username);
+  } catch (err) {
+    console.error(err);
+    if (err.errorResponse.code === 11000) {
+      return await findUserByName(username);
+    }
+  }
+}
+
 app.route('/api/users')
   .post(async (req, res) => {
     try {
-      const user = await createUser(req.body.username);
+      const user = await postUser(req.body.username);
       res.json(user);
     } catch (err) {
       console.error(err);
-      // NOTE: Maybe await a findUser method here to return a user even when he is already created
-      if (err.errorResponse.code === 11000) {
-        res.json({ error: 'Username already taken' });
-      }
     }
   })
   .get(async (_req, res) => {

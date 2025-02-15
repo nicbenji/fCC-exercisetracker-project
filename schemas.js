@@ -24,11 +24,15 @@ const createUser = async (username) => {
   }
 }
 
+const findUserByName = async (username) => {
+  return await User.findOne({ username: username }).select({ __v: 0 });
+}
+
 const getUsers = async () => {
   return await User.find({}).select({ __v: 0 });
 }
 
-
+exports.findUserByName = findUserByName;
 exports.createUser = createUser;
 exports.getUsers = getUsers;
 
