@@ -61,7 +61,6 @@ const createExercise = async (userId, description, duration, date) => {
   if (isNaN(duration)) {
     throw new Error('Please enter a number for the duration')
   }
-  console.log(date)
   const exercise = new Exercise({
     user: userId,
     description,
@@ -95,7 +94,6 @@ const getUserLogs = async (userId, from, to, limit) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid ObjectId');
   }
-  console.log(to, from)
 
   const user = await User.findById(userId).populate({
     path: 'log',

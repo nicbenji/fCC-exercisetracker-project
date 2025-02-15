@@ -35,7 +35,8 @@ app.route('/api/users')
 app.post('/api/users/:_id/exercises', async (req, res) => {
   try {
     const date = req.body.date ? new Date(req.body.date) : new Date();
-    const exercise = await createExercise(req.params._id, req.body.description, req.body.duration, date);
+    const duration = Number(req.body.duration);
+    const exercise = await createExercise(req.params._id, req.body.description, duration, date);
     res.json(exercise);
   } catch (err) {
     console.error(err);
