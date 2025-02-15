@@ -18,6 +18,7 @@ app.route('/api/users')
       res.json(user);
     } catch (err) {
       console.error(err);
+      // NOTE: Maybe await a findUser method here to return a user even when he is already created
       if (err.errorResponse.code === 11000) {
         res.json({ error: 'Username already taken' });
       }
@@ -46,12 +47,13 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 app.get('/api/users/:_id/logs', async (req, res) => {
   try {
     const from = req.query.from ? new Date(req.query.from) : new Date(0);
-    const to = req.query.to ? new Date(req.query.to, 23, 59, 59, 999) : new Date();
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 0;
+    const to = req.query.to ? new Date(req.query.to) : new Date('2037-01-01');
+    const limit = req.query.limit ? parseInt(req.query.limit) : 0;
     const userWithLogs = await getUserLogs(req.params._id, from, to, limit);
     res.json(userWithLogs);
   } catch (err) {
     console.error(err);
+    res.json({ error: err.message });
   }
 });
 

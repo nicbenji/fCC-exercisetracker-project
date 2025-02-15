@@ -94,12 +94,18 @@ const getUserLogs = async (userId, from, to, limit) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid ObjectId');
   }
+  if (isNaN(from.getTime()) || isNaN(to.getTime())) {
+    throw new Error('Invalid Date')
+  }
+  if (isNaN(limit)) {
+    throw new Error('Limit is NaN')
+  }
 
   const user = await User.findById(userId).populate({
     path: 'log',
     options: {
-      select: 'description duration date _id',
       match: { date: { $gte: from, $lte: to } },
+      select: 'description duration date -_id',
       sort: { date: -1 },
       limit: limit
     }
@@ -114,7 +120,7 @@ const getUserLogs = async (userId, from, to, limit) => {
     count: user.log.length,
     _id: user._id,
     log: user.log
-      .filter((exercise) => exercise.date >= from && exercise.date < to)
+      // .filter((exercise) => exercise.date.getTime() >= from.getTime() && exercise.date.getTime() <= to.getTime())
       .map((exercise) => ({
         description: exercise.description,
         duration: exercise.duration,
