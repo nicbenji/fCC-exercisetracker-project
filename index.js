@@ -33,8 +33,8 @@ app.route('/api/users')
   });
 
 app.post('/api/users/:_id/exercises', async (req, res) => {
-  const date = req.body.date ? new Date(req.body.date) : new Date();
   try {
+    const date = req.body.date ? new Date(req.body.date) : new Date();
     const exercise = await createExercise(req.params._id, req.body.description, req.body.duration, date);
     res.json(exercise);
   } catch (err) {
@@ -44,7 +44,10 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 
 app.get('/api/users/:_id/logs', async (req, res) => {
   try {
-    const userWithLogs = await getUserLogs(req.params._id);
+    const from = req.query.from ? new Date(req.query.from) : new Date(0);
+    const to = req.query.to ? new Date(req.query.to, 23, 59, 59, 999) : new Date();
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : 0;
+    const userWithLogs = await getUserLogs(req.params._id, from, to, limit);
     res.json(userWithLogs);
   } catch (err) {
     console.error(err);

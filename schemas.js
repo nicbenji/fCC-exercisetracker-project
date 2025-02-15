@@ -89,33 +89,39 @@ userSchema.virtual('log', {
 
 userSchema.set('toJSON', { virtuals: true });
 
-const getUserLogs = async (userId) => {
+// TODO:Match filter in populate currently is not working -> no idea why
+// workaround implemented using .filter() on the output
+const getUserLogs = async (userId, from, to, limit) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error('Invalid ObjectId');
   }
+  console.log(to, from)
 
   const user = await User.findById(userId).populate({
     path: 'log',
     options: {
       select: 'description duration date _id',
-      sort: { date: -1 }
+      match: { date: { $gte: from, $lte: to } },
+      sort: { date: -1 },
+      limit: limit
     }
   });
 
   if (!user) {
     throw new Error('User not found');
   }
-  console.log(user.log)
 
   return {
     username: user.username,
     count: user.log.length,
     _id: user._id,
-    log: user.log.map((exercise) => ({
-      description: exercise.description,
-      duration: exercise.duration,
-      date: exercise.date.toDateString()
-    }))
+    log: user.log
+      .filter((exercise) => exercise.date >= from && exercise.date < to)
+      .map((exercise) => ({
+        description: exercise.description,
+        duration: exercise.duration,
+        date: exercise.date.toDateString()
+      }))
   }
 
 }
